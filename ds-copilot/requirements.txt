@@ -1,0 +1,12 @@
+streamlit
+langchain
+langchain-google-genai
+faiss-cpu
+sentence-transformers
+pandas
+numpy
+openpyxl
+matplotlib
+seaborn
+plotly
+python-dotenv
