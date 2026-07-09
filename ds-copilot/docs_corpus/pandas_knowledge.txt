@@ -1,0 +1,38 @@
+TOPIC: KeyError in groupby or column access
+When you see "KeyError: 'column_name'", it means the column name used in your code does not exist in the DataFrame. Common causes: typos in column names, incorrect capitalization (pandas is case-sensitive), or extra spaces in column names. Fix: Check df.columns to see the exact column names available, and use the exact spelling and case.
+
+TOPIC: groupby() usage
+df.groupby('column_name')['target_column'].sum() groups rows by unique values in 'column_name' and aggregates 'target_column' using sum. Other aggregations include .mean(), .count(), .max(), .min(). Always verify column names exist using df.columns before calling groupby.
+
+TOPIC: AttributeError with DataFrame methods
+"AttributeError: 'DataFrame' object has no attribute 'X'" usually means you are calling a method that does not exist on DataFrame, often due to a typo (e.g., 'df.sumn()' instead of 'df.sum()') or calling a Series-only method on a DataFrame without first selecting a column.
+
+TOPIC: Plotting with matplotlib from pandas
+df['column'].plot(kind='bar') creates a bar chart. Valid kind values include 'bar', 'line', 'hist', 'box', 'pie', 'scatter'. For scatter plots, use df.plot(kind='scatter', x='col1', y='col2'). Always call plt.savefig() after plotting to save the chart to a file, since plt.show() does not work in non-interactive environments.
+
+TOPIC: Handling missing values (NaN)
+df.isnull().sum() shows the count of missing values per column. df.dropna() removes rows with missing values. df.fillna(value) replaces missing values with a specified value, such as df.fillna(0) or df.fillna(df.mean()) for numeric columns.
+
+TOPIC: Detecting outliers
+A common method is the IQR (Interquartile Range) method: Q1 = df['col'].quantile(0.25), Q3 = df['col'].quantile(0.75), IQR = Q3 - Q1. Outliers are values below Q1 - 1.5*IQR or above Q3 + 1.5*IQR.
+
+TOPIC: Detecting duplicate rows
+df.duplicated().sum() counts duplicate rows. df.drop_duplicates() removes them, keeping the first occurrence by default.
+
+TOPIC: TypeError when performing arithmetic on columns
+"TypeError: unsupported operand type(s)" often happens when trying to perform math on a column that is stored as text (object dtype) instead of a number. Fix: convert with pd.to_numeric(df['column'], errors='coerce') before doing arithmetic.
+
+TOPIC: Merging or joining DataFrames
+pd.merge(df1, df2, on='key_column', how='inner') combines two DataFrames based on a shared column. how can be 'inner', 'left', 'right', or 'outer' depending on which rows to keep.
+
+TOPIC: Time series / date handling
+Convert a column to datetime using pd.to_datetime(df['date_column']). Once converted, you can extract parts like df['date_column'].dt.year, .dt.month, or resample time series data using df.resample('M', on='date_column').
+
+TOPIC: ValueError with plot data
+"ValueError: could not convert string to float" usually means you are trying to plot or compute on a column that contains text instead of numbers. Check column dtypes using df.dtypes and convert with pd.to_numeric if needed.
+
+TOPIC: Empty DataFrame errors
+If a groupby or filter operation results in zero rows, subsequent operations like .plot() may raise errors. Always check if the resulting DataFrame or Series is empty using .empty before plotting.
+
+TOPIC: Correct import statements
+Standard imports needed for data analysis: import pandas as pd, import numpy as np, import matplotlib.pyplot as plt, import seaborn as sns. Missing these imports causes NameError.
