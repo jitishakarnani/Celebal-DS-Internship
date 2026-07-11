@@ -6,6 +6,9 @@ import streamlit as st
 
 from agent.core_agent import CoreAgent
 
+if "GOOGLE_API_KEY" in st.secrets:
+    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+
 st.set_page_config(page_title="Data Science Co-Pilot", page_icon="📊", layout="wide")
 st.title("📊 Autonomous Data Science Co-Pilot")
 st.caption("Upload a dataset, ask questions in plain English, get charts and insights.")
