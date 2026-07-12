@@ -8,7 +8,7 @@ from rag.retriever import KnowledgeRetriever
 
 load_dotenv()
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-flash-latest"
 
 SELF_HEAL_PROMPT = """You are a Python/Pandas debugging expert. The following code was
 generated to answer a user's question about a DataFrame `df`, but it failed when executed.
@@ -55,8 +55,23 @@ class SelfHealer:
         self.retriever = KnowledgeRetriever()
 
     @staticmethod
-    def _extract_code(text: str) -> str:
+    def _content_to_text(content) -> str:
+        """Normalizes LLM response content to a plain string, since some
+        Gemini responses return a list of parts instead of a plain string."""
+        if isinstance(content, list):
+            parts = []
+            for part in content:
+                if isinstance(part, dict):
+                    parts.append(part.get("text", ""))
+                else:
+                    parts.append(str(part))
+            return "".join(parts)
+        return content
+
+    @staticmethod
+    def _extract_code(text) -> str:
         """Strips markdown code fences if the LLM added them anyway."""
+        text = SelfHealer._content_to_text(text)
         text = text.strip()
         text = re.sub(r"^```python\s*|^```\s*|```$", "", text, flags=re.MULTILINE)
         return text.strip()

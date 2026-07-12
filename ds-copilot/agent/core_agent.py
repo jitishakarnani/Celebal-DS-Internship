@@ -87,7 +87,22 @@ class CoreAgent:
         return self.df.head(n).to_string(index=False)
 
     @staticmethod
-    def _extract_code(text: str) -> str:
+    def _content_to_text(content) -> str:
+        """Normalizes LLM response content to a plain string, since some
+        Gemini responses return a list of parts instead of a plain string."""
+        if isinstance(content, list):
+            parts = []
+            for part in content:
+                if isinstance(part, dict):
+                    parts.append(part.get("text", ""))
+                else:
+                    parts.append(str(part))
+            return "".join(parts)
+        return content
+
+    @staticmethod
+    def _extract_code(text) -> str:
+        text = CoreAgent._content_to_text(text)
         text = text.strip()
         text = re.sub(r"^```python\s*|^```\s*|```$", "", text, flags=re.MULTILINE)
         return text.strip()
@@ -107,7 +122,7 @@ class CoreAgent:
         prompt = INSIGHT_PROMPT.format(question=question, stdout=stdout.strip())
         try:
             response = self.llm.invoke(prompt)
-            return response.content.strip()
+            return self._content_to_text(response.content).strip()
         except Exception:
             return None
 
