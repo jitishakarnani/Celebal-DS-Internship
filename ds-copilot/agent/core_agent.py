@@ -9,7 +9,7 @@ from agent.self_heal import SelfHealer
 
 load_dotenv()
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-flash-latest"
 
 CODE_GEN_PROMPT = """You are an expert Python/Pandas data analyst. A DataFrame `df` is
 already loaded with the following schema and sample rows.
