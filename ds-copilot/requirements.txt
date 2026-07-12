@@ -10,3 +10,5 @@ matplotlib
 seaborn
 plotly
 python-dotenv
+requests
+beautifulsoup4
