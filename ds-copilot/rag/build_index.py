@@ -1,13 +1,17 @@
 import os
+from pathlib import Path
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
 
-CORPUS_PATH = os.path.join("docs_corpus", "pandas_knowledge.txt")
-OFFICIAL_DOCS_DIR = os.path.join("docs_corpus", "official_docs")
-INDEX_DIR = os.path.join("rag", "index")
-INDEX_PATH = os.path.join(INDEX_DIR, "faiss_index.bin")
-CHUNKS_PATH = os.path.join(INDEX_DIR, "chunks.pkl")
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+
+CORPUS_PATH = PROJECT_ROOT / "docs_corpus" / "pandas_knowledge.txt"
+OFFICIAL_DOCS_DIR = PROJECT_ROOT / "docs_corpus" / "official_docs"
+INDEX_DIR = BASE_DIR / "index"
+INDEX_PATH = INDEX_DIR / "faiss_index.bin"
+CHUNKS_PATH = INDEX_DIR / "chunks.pkl"
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 
@@ -26,12 +30,13 @@ def load_and_chunk_corpus(path):
 
 def load_and_chunk_official_docs(folder, chunk_size=800, overlap=100):
     chunks = []
-    if not os.path.isdir(folder):
+    folder = Path(folder)
+    if not folder.is_dir():
         return chunks
     for fname in sorted(os.listdir(folder)):
         if not fname.endswith(".txt"):
             continue
-        path = os.path.join(folder, fname)
+        path = folder / fname
         with open(path, "r", encoding="utf-8") as f:
             text = f.read()
         paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
@@ -74,8 +79,8 @@ def build_index():
     index = faiss.IndexFlatL2(dimension)
     index.add(embeddings)
 
-    os.makedirs(INDEX_DIR, exist_ok=True)
-    faiss.write_index(index, INDEX_PATH)
+    INDEX_DIR.mkdir(parents=True, exist_ok=True)
+    faiss.write_index(index, str(INDEX_PATH))
 
     with open(CHUNKS_PATH, "wb") as f:
         pickle.dump(chunks, f)
