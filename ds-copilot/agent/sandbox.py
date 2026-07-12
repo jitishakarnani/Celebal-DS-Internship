@@ -39,8 +39,8 @@ import matplotlib.pyplot as plt
 {load_line}
 
 {code}
-
-plt.savefig(r"{output_chart_path}", bbox_inches='tight')
+if plt.get_fignums() and plt.gcf().get_axes():
+    plt.savefig(r"{output_chart_path}", bbox_inches='tight')
 """
             with open(script_path, "w", encoding="utf-8") as f:
                 f.write(wrapped_code)
